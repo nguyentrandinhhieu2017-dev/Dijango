@@ -1,0 +1,138 @@
+{% extends "store/base.html" %}
+{% load humanize %}
+{% block title %}Tủ sách — BookStore{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Page Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-2 text-sm text-stone-500 mb-2">
+      <a href="{% url 'store:home' %}" class="hover:text-stone-900 transition-colors">Trang chủ</a>
+      <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      <span class="text-stone-900 font-medium">Tủ sách</span>
+    </div>
+    <h1 class="text-3xl font-extrabold text-stone-950 tracking-tight">Tất cả tác phẩm</h1>
+    <p class="text-stone-500 text-sm mt-1">Đang trưng bày {{ books.count }} cuốn sách tuyển chọn</p>
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-8">
+
+    <!-- ===== SIDEBAR LỌC DANH MỤC ===== -->
+    <aside class="w-full lg:w-64 shrink-0">
+      <div class="bg-white rounded-2xl border border-stone-200/90 shadow-sm overflow-hidden sticky top-20">
+        <div class="px-5 py-4 bg-stone-900 text-white">
+          <h3 class="text-sm font-bold flex items-center gap-2">
+            <i data-lucide="filter" class="w-4 h-4"></i> Danh mục sách
+          </h3>
+        </div>
+        <nav class="p-2 space-y-1">
+          <a href="{% url 'store:book_list' %}"
+             class="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+             {% if not selected_category %}bg-stone-100 text-stone-900 font-semibold{% else %}text-stone-700 hover:bg-stone-100 hover:text-stone-900{% endif %}">
+            <span class="flex items-center gap-2">
+              <i data-lucide="layout-grid" class="w-4 h-4 text-stone-500"></i> Tất cả
+            </span>
+            <span class="text-xs px-2 py-0.5 rounded-md font-semibold {% if not selected_category %}bg-stone-900 text-white{% else %}bg-stone-100 text-stone-600{% endif %}">
+              {{ books.count }}
+            </span>
+          </a>
+          {% for cat in categories %}
+          <a href="{% url 'store:book_list' %}?category={{ cat.pk }}"
+             class="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+             {% if selected_category == cat.pk|stringformat:'s' %}bg-stone-100 text-stone-900 font-semibold{% else %}text-stone-700 hover:bg-stone-100 hover:text-stone-900{% endif %}">
+            <i data-lucide="bookmark" class="w-4 h-4 text-stone-400"></i> {{ cat.name }}
+          </a>
+          {% endfor %}
+        </nav>
+      </div>
+    </aside>
+
+    <!-- ===== DANH SÁCH SÁCH GRID ===== -->
+    <div class="flex-1">
+      {% if books %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+        {% for book in books %}
+        <div class="group bg-white rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col">
+
+          <!-- Image container (No blue div) -->
+          <div class="p-4 pb-0">
+            <div class="w-full h-48 overflow-hidden rounded-xl bg-stone-100 relative">
+              {% if book.image %}
+              <img src="{{ book.image.url }}" alt="{{ book.title }}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+              {% else %}
+              <img src="https://picsum.photos/seed/{{ book.id }}/400/300" alt="{{ book.title }}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+              {% endif %}
+
+              <div class="absolute top-2.5 left-2.5">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-stone-900/85 backdrop-blur-sm text-white text-xs font-medium rounded-lg">
+                  {{ book.category.name }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 flex-1 flex flex-col">
+            <!-- Author & Stock -->
+            <div class="flex items-center justify-between gap-2 mb-2 text-xs text-stone-500">
+              <span class="inline-flex items-center gap-1 truncate font-medium text-stone-600">
+                <i data-lucide="user" class="w-3.5 h-3.5 shrink-0"></i>
+                {{ book.author }}
+              </span>
+              {% if book.stock > 0 %}
+              <span class="shrink-0 px-2 py-0.5 bg-stone-100 text-stone-700 rounded-md font-medium">
+                Còn: {{ book.stock }}
+              </span>
+              {% else %}
+              <span class="shrink-0 px-2 py-0.5 bg-stone-200 text-stone-600 rounded-md font-medium">
+                Hết hàng
+              </span>
+              {% endif %}
+            </div>
+
+            <!-- Title -->
+            <h3 class="font-bold text-stone-900 text-sm leading-snug mb-1.5 line-clamp-2">
+              {{ book.title }}
+            </h3>
+
+            {% if book.description %}
+            <p class="text-stone-500 text-xs leading-relaxed line-clamp-2 mb-4">{{ book.description }}</p>
+            {% endif %}
+
+            <!-- Footer Price & Button -->
+            <div class="mt-auto pt-3 border-t border-stone-100 flex items-center justify-between">
+              <div>
+                <span class="text-xs text-stone-400 block">Giá</span>
+                <span class="text-base font-extrabold text-stone-900">
+                  {{ book.price|floatformat:0|intcomma }} VNĐ
+                </span>
+              </div>
+              <a href="{% url 'store:book_detail' book.pk %}"
+                 class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-black hover:bg-stone-800 text-white text-xs font-semibold rounded-xl shadow-sm transition-all duration-200">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i> Chi tiết
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% else %}
+      <!-- Empty state -->
+      <div class="flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl border border-stone-200">
+        <div class="w-16 h-16 bg-stone-100 rounded-2xl flex items-center justify-center mb-4 text-stone-400">
+          <i data-lucide="book-x" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-base font-bold text-stone-900 mb-1">Không có tác phẩm nào</h3>
+        <p class="text-stone-500 text-xs mb-4">Danh mục hiện tại chưa có sách. Bạn có thể chọn danh mục khác.</p>
+        <a href="{% url 'store:book_list' %}"
+           class="inline-flex items-center gap-2 px-4 py-2 bg-black text-white text-xs font-semibold rounded-xl hover:bg-stone-800 transition-colors">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Xem tất cả sách
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,214 @@
+{% extends "store/base.html" %}
+{% load humanize %}
+{% block title %}Trang chủ — BookStore{% endblock %}
+
+{% block content %}
+
+<!-- ==================== HERO ==================== -->
+<section class="relative overflow-hidden bg-gradient-to-br from-stone-950 via-stone-900 to-stone-800 text-white min-h-[75vh] flex items-center border-b border-stone-800">
+  <!-- Subtle pattern overlay -->
+  <div class="absolute inset-0 opacity-5"
+       style="background-image: url('data:image/svg+xml,<svg width=%2240%22 height=%2240%22 xmlns=%22http://www.w3.org/2000/svg%22><defs><pattern id=%22grid%22 width=%2240%22 height=%2240%22 patternUnits=%22userSpaceOnUse%22><path d=%22M 40 0 L 0 0 0 40%22 fill=%22none%22 stroke=%22white%22 stroke-width=%220.5%22/></pattern></defs><rect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23grid)%22/></svg>');">
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <!-- Left content -->
+      <div class="lg:col-span-7 animate-fadeUp">
+        <div class="inline-flex items-center gap-2 bg-stone-800/80 border border-stone-700/80 text-stone-300 text-xs font-medium px-3.5 py-1.5 rounded-full mb-6">
+          <span class="w-1.5 h-1.5 bg-stone-300 rounded-full"></span>
+          Tủ sách chọn lọc & Tác phẩm tiêu biểu
+        </div>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight mb-6">
+          Nơi gặp gỡ của những <br />
+          <span class="block mt-2 text-stone-300 italic font-serif font-normal tracking-wide" style="font-family: 'Playfair Display', 'Lora', Georgia, serif;">tâm hồn yêu sách</span>
+        </h1>
+        <p class="text-stone-300 text-base sm:text-lg leading-relaxed mb-8 max-w-xl">
+          Đắm mình vào kho tàng tri thức với những cuốn sách kinh điển, văn học sâu lắng và kỹ năng thực tiễn được tinh tuyển kỹ lưỡng.
+        </p>
+        <div class="flex flex-wrap gap-3.5">
+          <a href="{% url 'store:book_list' %}"
+             class="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-stone-950 font-semibold rounded-xl hover:bg-stone-100 transition-all duration-200 text-sm shadow-sm">
+            <i data-lucide="compass" class="w-4 h-4"></i> Khám phá tủ sách
+          </a>
+          {% if not user.is_authenticated %}
+          <a href="{% url 'store:register' %}"
+             class="inline-flex items-center gap-2 px-6 py-3.5 bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-200 font-medium rounded-xl transition-all duration-200 text-sm">
+            <i data-lucide="user-plus" class="w-4 h-4"></i> Đăng ký thành viên
+          </a>
+          {% endif %}
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="flex gap-8 mt-12 pt-8 border-t border-stone-800/80">
+          <div>
+            <div class="text-2xl font-bold text-white">100%</div>
+            <div class="text-stone-400 text-xs mt-0.5">Sách có bản quyền</div>
+          </div>
+          <div class="w-px bg-stone-800"></div>
+          <div>
+            <div class="text-2xl font-bold text-white">Đa dạng</div>
+            <div class="text-stone-400 text-xs mt-0.5">Nhiều thể loại</div>
+          </div>
+          <div class="w-px bg-stone-800"></div>
+          <div>
+            <div class="text-2xl font-bold text-white">Tiết kiệm</div>
+            <div class="text-stone-400 text-xs mt-0.5">Giá tốt mỗi ngày</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right image showcase banner -->
+      <div class="lg:col-span-5 hidden lg:block">
+        <div class="relative bg-stone-900 border border-stone-800 p-3 rounded-3xl shadow-2xl">
+          <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=700&q=80"
+               alt="Book banner"
+               class="w-full h-80 object-cover rounded-2xl filter brightness-95 contrast-105" />
+          <div class="absolute bottom-6 left-6 right-6 bg-stone-950/80 backdrop-blur-md border border-stone-800 p-4 rounded-2xl text-left">
+            <p class="text-xs text-stone-400 uppercase tracking-wider font-semibold">Tác phẩm đề xuất</p>
+            <p class="text-sm font-bold text-white mt-0.5">Khám phá những góc nhìn mới qua trang sách</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CATEGORIES ==================== -->
+{% if categories %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h2 class="text-xl font-bold text-stone-900">Danh mục tác phẩm</h2>
+      <p class="text-xs text-stone-500 mt-0.5">Tìm kiếm theo lĩnh vực bạn quan tâm</p>
+    </div>
+    <a href="{% url 'store:book_list' %}" class="text-sm text-stone-700 font-semibold hover:text-black flex items-center gap-1">
+      Xem tất cả <i data-lucide="arrow-right" class="w-4 h-4"></i>
+    </a>
+  </div>
+  <div class="flex flex-wrap gap-2.5">
+    {% for cat in categories %}
+    <a href="{% url 'store:book_list' %}?category={{ cat.pk }}"
+       class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm font-medium text-stone-800 hover:border-stone-800 hover:bg-stone-100 transition-all duration-200 shadow-sm">
+      <i data-lucide="bookmark" class="w-3.5 h-3.5 text-stone-500"></i>
+      {{ cat.name }}
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ==================== FEATURED BOOKS ==================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-stone-900">Sách nổi bật</h2>
+      <p class="text-stone-500 text-sm mt-0.5">Những cuốn sách được tìm đọc nhiều nhất</p>
+    </div>
+    <a href="{% url 'store:book_list' %}"
+       class="hidden sm:inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-800 border border-stone-300 hover:border-stone-900 rounded-xl transition-colors">
+      Xem toàn bộ <i data-lucide="arrow-right" class="w-4 h-4"></i>
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for book in featured_books %}
+    <div class="group bg-white rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col">
+      <!-- Card Image (No blue div) -->
+      <div class="p-4 pb-0">
+        <div class="w-full h-48 overflow-hidden rounded-xl bg-stone-100 relative">
+          {% if book.image %}
+          <img src="{{ book.image.url }}" alt="{{ book.title }}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+          {% else %}
+          <img src="https://picsum.photos/seed/{{ book.id }}/400/300" alt="{{ book.title }}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+          {% endif %}
+          
+          <!-- Category badge overlay -->
+          <div class="absolute top-2.5 left-2.5">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-stone-900/85 backdrop-blur-sm text-white text-xs font-medium rounded-lg">
+              {{ book.category.name }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between gap-2 mb-2 text-xs text-stone-500">
+          <span class="inline-flex items-center gap-1 truncate font-medium text-stone-600">
+            <i data-lucide="user" class="w-3.5 h-3.5 shrink-0"></i>
+            {{ book.author }}
+          </span>
+          {% if book.stock > 0 %}
+          <span class="shrink-0 px-2 py-0.5 bg-stone-100 text-stone-700 rounded-md font-medium">
+            Còn hàng ({{ book.stock }})
+          </span>
+          {% else %}
+          <span class="shrink-0 px-2 py-0.5 bg-stone-200 text-stone-600 rounded-md font-medium">
+            Tạm hết
+          </span>
+          {% endif %}
+        </div>
+
+        <h3 class="font-bold text-stone-900 text-base leading-snug mb-2 line-clamp-2">
+          {{ book.title }}
+        </h3>
+
+        {% if book.description %}
+        <p class="text-stone-500 text-xs leading-relaxed line-clamp-2 mb-4">{{ book.description }}</p>
+        {% endif %}
+
+        <!-- Card Footer -->
+        <div class="mt-auto pt-3 border-t border-stone-100 flex items-center justify-between">
+          <div>
+            <span class="text-xs text-stone-400 block">Giá niêm yết</span>
+            <span class="text-base font-extrabold text-stone-900">
+              {{ book.price|floatformat:0|intcomma }} VNĐ
+            </span>
+          </div>
+          <a href="{% url 'store:book_detail' book.pk %}"
+             class="inline-flex items-center gap-1.5 px-4 py-2 bg-black hover:bg-stone-800 text-white text-xs font-semibold rounded-xl shadow-sm transition-all duration-200">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Chi tiết
+          </a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-span-3">
+      <div class="text-center py-20 text-stone-500 bg-white rounded-2xl border border-stone-200">
+        <i data-lucide="book-x" class="w-12 h-12 mx-auto mb-3 text-stone-400"></i>
+        <p class="text-sm">Chưa có tác phẩm nào được cập nhật.</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="sm:hidden mt-6 text-center">
+    <a href="{% url 'store:book_list' %}" class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-stone-800 border border-stone-300 rounded-xl">
+      Xem toàn bộ tủ sách <i data-lucide="arrow-right" class="w-4 h-4"></i>
+    </a>
+  </div>
+</section>
+
+<!-- ==================== CTA BANNER ==================== -->
+{% if not user.is_authenticated %}
+<section class="bg-stone-900 text-white py-14 border-t border-stone-800">
+  <div class="max-w-3xl mx-auto px-4 text-center">
+    <div class="w-12 h-12 bg-stone-800 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-stone-700">
+      <i data-lucide="book-open" class="w-6 h-6 text-stone-200"></i>
+    </div>
+    <h2 class="text-2xl font-bold text-white mb-2">Trở thành thành viên của BookStore</h2>
+    <p class="text-stone-400 mb-6 text-sm">Đăng ký tài khoản miễn phí để khám phá chi tiết tác phẩm và theo dõi các đầu sách yêu thích.</p>
+    <div class="flex items-center justify-center gap-3 flex-wrap">
+      <a href="{% url 'store:register' %}" class="px-6 py-3 bg-white text-stone-950 font-bold rounded-xl hover:bg-stone-100 transition-all duration-200 text-sm">
+        Đăng ký miễn phí
+      </a>
+      <a href="{% url 'store:login' %}" class="px-6 py-3 bg-stone-800 border border-stone-700 text-stone-200 font-semibold rounded-xl hover:bg-stone-700 transition-all duration-200 text-sm">
+        Đăng nhập
+      </a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

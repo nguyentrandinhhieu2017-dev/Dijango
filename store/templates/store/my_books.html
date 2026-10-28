@@ -1,0 +1,108 @@
+{% extends "store/base.html" %}
+{% load humanize %}
+{% block title %}Sách của bạn — BookStore{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-2 text-sm text-stone-500 mb-2">
+      <a href="{% url 'store:home' %}" class="hover:text-stone-900 transition-colors">Trang chủ</a>
+      <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      <span class="text-stone-900 font-medium">Sách của bạn</span>
+    </div>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-extrabold text-stone-950 tracking-tight">Kệ sách cá nhân</h1>
+        <p class="text-stone-500 text-sm mt-1">
+          Xin chào <strong class="text-stone-800">{{ user.username }}</strong>, bạn đang sở hữu <strong class="text-stone-900">{{ purchases.count }}</strong> cuốn sách.
+        </p>
+      </div>
+      <a href="{% url 'store:book_list' %}"
+         class="inline-flex items-center gap-2 px-4 py-2.5 bg-stone-900 hover:bg-black text-white text-xs font-semibold rounded-xl shadow-sm transition-all self-start sm:self-auto">
+        <i data-lucide="plus" class="w-4 h-4"></i> Khám phá thêm sách
+      </a>
+    </div>
+  </div>
+
+  <!-- Book List -->
+  {% if purchases %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    {% for item in purchases %}
+    <div class="group bg-white rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col">
+
+      <!-- Cover Image -->
+      <div class="p-4 pb-0">
+        <div class="w-full h-48 overflow-hidden rounded-xl bg-stone-100 relative">
+          {% if item.book.image %}
+          <img src="{{ item.book.image.url }}" alt="{{ item.book.title }}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+          {% else %}
+          <img src="https://picsum.photos/seed/{{ item.book.id }}/400/300" alt="{{ item.book.title }}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+          {% endif %}
+
+          <div class="absolute top-2.5 left-2.5">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-stone-900/85 backdrop-blur-sm text-white text-xs font-medium rounded-lg">
+              {{ item.book.category.name }}
+            </span>
+          </div>
+
+          <div class="absolute bottom-2.5 right-2.5">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-white/95 text-stone-800 text-[11px] font-bold rounded-md shadow-sm">
+              <i data-lucide="check-circle" class="w-3 h-3 text-stone-900"></i> Đã sở hữu
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Book Info -->
+      <div class="p-5 flex-1 flex flex-col">
+        <p class="text-xs text-stone-500 font-medium mb-1.5 flex items-center gap-1.5 truncate">
+          <i data-lucide="user" class="w-3.5 h-3.5 shrink-0 text-stone-400"></i>
+          {{ item.book.author }}
+        </p>
+
+        <h3 class="font-bold text-stone-900 text-sm leading-snug mb-3 line-clamp-2">
+          {{ item.book.title }}
+        </h3>
+
+        <!-- Purchased Time -->
+        <div class="mt-auto pt-3 border-t border-stone-100">
+          <div class="flex items-center justify-between text-xs text-stone-400 mb-3">
+            <span class="flex items-center gap-1">
+              <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Mua ngày
+            </span>
+            <span class="text-stone-700 font-medium">{{ item.purchased_at|date:"d/m/Y H:i" }}</span>
+          </div>
+
+          <a href="{% url 'store:book_detail' item.book.pk %}"
+             class="w-full flex items-center justify-center gap-1.5 py-2.5 bg-stone-100 hover:bg-stone-900 hover:text-white text-stone-800 text-xs font-semibold rounded-xl transition-all duration-200">
+            <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Xem tác phẩm
+          </a>
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <!-- Empty State -->
+  <div class="bg-white rounded-3xl border border-stone-200/90 p-12 text-center max-w-xl mx-auto my-8 shadow-sm">
+    <div class="w-16 h-16 bg-stone-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-stone-400">
+      <i data-lucide="library" class="w-8 h-8"></i>
+    </div>
+    <h3 class="text-lg font-bold text-stone-900 mb-1">Kệ sách của bạn đang trống</h3>
+    <p class="text-stone-500 text-sm mb-6 max-w-md mx-auto">
+      Bạn chưa sở hữu cuốn sách nào. Hãy khám phá kho tàng tác phẩm đặc sắc và chọn mua những cuốn sách bạn yêu thích nhé!
+    </p>
+    <a href="{% url 'store:book_list' %}"
+       class="inline-flex items-center gap-2 px-6 py-3 bg-black hover:bg-stone-800 text-white text-sm font-semibold rounded-xl shadow-sm transition-all duration-200">
+      <i data-lucide="compass" class="w-4 h-4"></i> Khám phá tủ sách ngay
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+

@@ -1,0 +1,131 @@
+{% extends "store/base.html" %}
+{% load humanize %}
+{% block title %}Nạp tiền vào ví — BookStore{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-2 text-sm text-stone-500 mb-6">
+    <a href="{% url 'store:home' %}" class="hover:text-stone-900 transition-colors">Trang chủ</a>
+    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+    <a href="{% url 'store:profile' %}" class="hover:text-stone-900 transition-colors">Tài khoản</a>
+    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+    <span class="text-stone-900 font-medium">Nạp tiền vào ví</span>
+  </nav>
+
+  <!-- Card nạp tiền -->
+  <div class="bg-white rounded-3xl border border-stone-200/90 shadow-xl overflow-hidden">
+
+    <!-- Header card -->
+    <div class="bg-stone-900 px-8 py-8 text-center text-white">
+      <div class="w-14 h-14 bg-stone-800 rounded-2xl flex items-center justify-center mx-auto mb-3.5 border border-stone-700">
+        <i data-lucide="wallet" class="w-6 h-6 text-stone-200"></i>
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight">Ví điện tử BookStore</h1>
+      <p class="text-stone-400 text-xs mt-1">Nạp tiền để thanh toán sách nhanh chóng & an toàn</p>
+
+      <!-- Số dư hiện tại -->
+      <div class="mt-5 inline-flex items-center gap-2 px-5 py-2.5 bg-stone-800/90 border border-stone-700 rounded-2xl">
+        <span class="text-xs text-stone-400 uppercase tracking-wider font-semibold">Số dư hiện tại:</span>
+        <span class="text-lg font-extrabold text-white">
+          {{ wallet.balance|default:0|intcomma }} <span class="text-xs font-normal text-stone-300">VNĐ</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Form nạp tiền -->
+    <div class="p-8">
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
+
+        <div>
+          <label for="amount" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-2">
+            Chọn nhanh mệnh giá nạp
+          </label>
+          <div class="grid grid-cols-3 gap-2.5 mb-4">
+            <button type="button" onclick="selectAmount(50000)"
+                    class="preset-btn py-2.5 px-3 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 hover:bg-stone-900 hover:text-white hover:border-stone-900 transition-all text-center">
+              +50.000 ₫
+            </button>
+            <button type="button" onclick="selectAmount(100000)"
+                    class="preset-btn py-2.5 px-3 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 hover:bg-stone-900 hover:text-white hover:border-stone-900 transition-all text-center">
+              +100.000 ₫
+            </button>
+            <button type="button" onclick="selectAmount(200000)"
+                    class="preset-btn py-2.5 px-3 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 hover:bg-stone-900 hover:text-white hover:border-stone-900 transition-all text-center">
+              +200.000 ₫
+            </button>
+            <button type="button" onclick="selectAmount(500000)"
+                    class="preset-btn py-2.5 px-3 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 hover:bg-stone-900 hover:text-white hover:border-stone-900 transition-all text-center">
+              +500.000 ₫
+            </button>
+            <button type="button" onclick="selectAmount(1000000)"
+                    class="preset-btn py-2.5 px-3 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 hover:bg-stone-900 hover:text-white hover:border-stone-900 transition-all text-center">
+              +1.000.000 ₫
+            </button>
+            <button type="button" onclick="selectAmount(2000000)"
+                    class="preset-btn py-2.5 px-3 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 hover:bg-stone-900 hover:text-white hover:border-stone-900 transition-all text-center">
+              +2.000.000 ₫
+            </button>
+          </div>
+
+          <label for="amount" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+            Hoặc tự nhập số tiền cần nạp (VNĐ) <span class="text-stone-900">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-stone-400">
+              <i data-lucide="coins" class="w-4 h-4"></i>
+            </div>
+            <input
+              type="number"
+              name="amount"
+              id="amount"
+              min="10000"
+              step="10000"
+              value="200000"
+              required
+              placeholder="Ví dụ: 200000"
+              class="w-full pl-10 pr-16 py-3 bg-stone-50 border border-stone-200 focus:ring-2 focus:ring-stone-900 focus:border-stone-900 rounded-xl text-base font-bold text-stone-900 focus:outline-none transition-all duration-200"
+            />
+            <div class="absolute inset-y-0 right-3.5 flex items-center pointer-events-none text-stone-500 font-semibold text-xs">
+              VNĐ
+            </div>
+          </div>
+          <p class="text-[11px] text-stone-400 mt-1.5">
+            * Môi trường thử nghiệm: Tiền sẽ được cộng tức thì vào ví mà không yêu cầu cổng thanh toán thật.
+          </p>
+        </div>
+
+        <button type="submit"
+                class="w-full flex items-center justify-center gap-2 py-3.5 bg-black hover:bg-stone-800 text-white font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 text-sm cursor-pointer">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Xác nhận nạp tiền vào ví
+        </button>
+      </form>
+
+      <!-- Quay lại -->
+      <div class="mt-6 pt-5 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+        <a href="{% url 'store:book_list' %}" class="hover:text-stone-900 inline-flex items-center gap-1 transition-colors">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Về tủ sách
+        </a>
+        <a href="{% url 'store:profile' %}" class="hover:text-stone-900 inline-flex items-center gap-1 transition-colors">
+          <i data-lucide="user" class="w-3.5 h-3.5"></i> Về trang cá nhân
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  function selectAmount(val) {
+    const input = document.getElementById('amount');
+    if (input) {
+      input.value = val;
+      input.focus();
+    }
+  }
+</script>
+{% endblock %}
+

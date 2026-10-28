@@ -1,0 +1,96 @@
+{% extends "store/base.html" %}
+{% block title %}Đăng ký tài khoản — BookStore{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-12">
+  <div class="w-full max-w-lg">
+
+    <!-- Card -->
+    <div class="bg-white rounded-3xl shadow-xl border border-stone-200/90 overflow-hidden">
+      <!-- Header -->
+      <div class="bg-stone-900 px-8 py-8 text-center text-white">
+        <div class="w-14 h-14 bg-stone-800 rounded-2xl flex items-center justify-center mx-auto mb-3.5 border border-stone-700">
+          <i data-lucide="user-plus" class="w-6 h-6 text-stone-200"></i>
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight">Tạo tài khoản đọc</h1>
+        <p class="text-stone-400 text-xs mt-1">Đăng ký nhanh chóng hoàn toàn miễn phí</p>
+      </div>
+
+      <!-- Form -->
+      <div class="px-8 py-8">
+        <form method="post" class="space-y-4">
+          {% csrf_token %}
+
+          {% for field in form %}
+          <div>
+            <label for="{{ field.id_for_label }}" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+              {{ field.label }}
+              {% if field.field.required %}<span class="text-stone-900 ml-0.5">*</span>{% endif %}
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-stone-400">
+                {% if "username" in field.html_name %}<i data-lucide="user" class="w-4 h-4"></i>
+                {% elif "email" in field.html_name %}<i data-lucide="mail" class="w-4 h-4"></i>
+                {% else %}<i data-lucide="lock" class="w-4 h-4"></i>{% endif %}
+              </div>
+              <input
+                type="{{ field.field.widget.input_type }}"
+                name="{{ field.html_name }}"
+                id="{{ field.id_for_label }}"
+                {% if field.value %}value="{{ field.value }}"{% endif %}
+                placeholder="{{ field.label }}"
+                class="w-full pl-10 pr-4 py-2.5 bg-stone-50 border {% if field.errors %}border-red-500 focus:ring-red-400{% else %}border-stone-200 focus:ring-stone-900 focus:border-stone-900{% endif %} rounded-xl text-sm focus:outline-none focus:ring-2 transition-all duration-200"
+              />
+            </div>
+            {% if field.help_text %}
+            <p class="text-xs text-stone-400 mt-1.5 leading-relaxed">{{ field.help_text }}</p>
+            {% endif %}
+            {% for error in field.errors %}
+            <p class="flex items-center gap-1 text-red-600 text-xs mt-1.5 font-medium">
+              <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> {{ error }}
+            </p>
+            {% endfor %}
+          </div>
+          {% endfor %}
+
+          {% if form.non_field_errors %}
+          <div class="flex items-start gap-2 bg-stone-100 border border-stone-300 text-stone-800 text-xs px-3.5 py-2.5 rounded-xl">
+            <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-red-600 mt-0.5"></i>
+            <span>{% for error in form.non_field_errors %}{{ error }}{% endfor %}</span>
+          </div>
+          {% endif %}
+
+          <p class="text-xs text-stone-500 text-center pt-1">
+            Bằng cách bấm đăng ký, bạn đồng ý với
+            <span class="text-stone-900 font-medium underline underline-offset-2 cursor-pointer">Điều khoản bạn đọc</span>
+            của BookStore.
+          </p>
+
+          <button type="submit"
+                  class="w-full flex items-center justify-center gap-2 py-3 bg-black hover:bg-stone-800 text-white font-bold rounded-xl shadow-sm transition-all duration-200 text-sm mt-3">
+            <i data-lucide="user-check" class="w-4 h-4"></i> Hoàn tất đăng ký
+          </button>
+        </form>
+
+        <div class="mt-6 text-center">
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-stone-200"></div></div>
+            <span class="relative bg-white px-3 text-xs text-stone-400">Bạn đã có tài khoản?</span>
+          </div>
+          <a href="{% url 'store:login' %}"
+             class="mt-4 w-full inline-flex items-center justify-center gap-2 py-2.5 border-2 border-stone-200 text-stone-800 font-semibold rounded-xl hover:bg-stone-100 hover:border-stone-300 transition-all duration-200 text-sm">
+            <i data-lucide="log-in" class="w-4 h-4"></i> Đăng nhập ngay
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Back Home -->
+    <div class="text-center mt-5">
+      <a href="{% url 'store:home' %}" class="text-xs text-stone-500 hover:text-stone-900 inline-flex items-center gap-1.5 transition-colors">
+        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Trở về trang chủ
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

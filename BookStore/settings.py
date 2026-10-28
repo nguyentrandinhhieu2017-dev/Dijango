@@ -60,7 +60,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BookStore.wsgi.application'
 
-# Database — MySQL
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
